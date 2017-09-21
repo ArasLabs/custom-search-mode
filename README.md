@@ -67,4 +67,4 @@ Created by Aras Corporation Support.
 
 ## License
 
-Aras Labs projects are published to Github under the MIT license. See the [LICENSE file](./blob/master/LICENSE) for license rights and limitations.
+Aras Labs projects are published to Github under the MIT license. See the [LICENSE file](./LICENSE) for license rights and limitations.
