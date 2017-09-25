@@ -8,12 +8,14 @@ This project and the following release notes have been migrated from the old Ara
 
 Release | Notes
 --------|--------
+[v2](https://github.com/ArasLabs/custom-search-mode/releases/tag/v2) | Upgraded to support 11.0 SP11
 [v1](https://github.com/ArasLabs/custom-search-mode/releases/tag/v1) | Initial Release
 
 #### Supported Aras Versions
 
 Project | Aras
 --------|------
+[v2](https://github.com/ArasLabs/custom-search-mode/releases/tag/v2) | 11.0 SP11
 [v1](https://github.com/ArasLabs/custom-search-mode/releases/tag/v1) | 9.3
 
 ## Installation
