@@ -20,7 +20,7 @@ Release | Notes
 
 Project | Aras
 --------|------
-[v3](https://github.com/ArasLabs/custom-search-mode/releases/tag/v2) | 11.0 SP12
+[v3](https://github.com/ArasLabs/custom-search-mode/releases/tag/v3) | 11.0 SP12
 [v2](https://github.com/ArasLabs/custom-search-mode/releases/tag/v2) | 11.0 SP11
 [v1](https://github.com/ArasLabs/custom-search-mode/releases/tag/v1) | 9.3
 
