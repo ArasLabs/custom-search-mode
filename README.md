@@ -1,6 +1,10 @@
 # Custom Search Mode
 
-This package contains a sample of creating a Custom Search Mode to be used in addition to the default Simple, Advanced, and AML search modes.
+This package contains two samples of creating a Custom Search Mode to be used in addition to the default Simple, Advanced, and AML search modes.
+
+The first is a simple example that uses two fields to allow users to search on Parts by their Item Numbers and Names. This search mode is explicitly limited to the Part ItemType.
+
+The second demonstrates an example that allows users to search on items based on the Parent Package they are in. This search mode is intended to be used to search upon administrative items like ItemTypes, Methods, Forms, etc, but it is not explicitly limited to any specific ItemTypes.
 
 ## History
 
@@ -8,6 +12,7 @@ This project and the following release notes have been migrated from the old Ara
 
 Release | Notes
 --------|--------
+[v3](https://github.com/ArasLabs/custom-search-mode/releases/tag/v3) | Added Parent Package search mode example
 [v2](https://github.com/ArasLabs/custom-search-mode/releases/tag/v2) | Upgraded to support 11.0 SP11
 [v1](https://github.com/ArasLabs/custom-search-mode/releases/tag/v1) | Initial Release
 
@@ -15,6 +20,7 @@ Release | Notes
 
 Project | Aras
 --------|------
+[v3](https://github.com/ArasLabs/custom-search-mode/releases/tag/v2) | 11.0 SP12
 [v2](https://github.com/ArasLabs/custom-search-mode/releases/tag/v2) | 11.0 SP11
 [v1](https://github.com/ArasLabs/custom-search-mode/releases/tag/v1) | 9.3
 
@@ -53,6 +59,24 @@ Project | Aras
 8. Click **Import** in the top left corner.
 9. Close the Aras Package Import tool.
 
+## Usage
+
+#### Custom Search
+1. Login to Innovator
+2. Navigate to the Part ItemType
+3. In the search mode dropdown, selec the Custom Sample search mode
+4. Fill in appropriate values for Item Number and/or Name
+5. Run the search
+
+#### Parent Package Search
+1. Login to Innovator
+2. Navigate to any item in the TOC (e.g. Administration > ItemTypes)
+3. Select the Parent Package Search search mode
+4. Click on the ellipsis (...) button and select a Package Definition (e.g. com.aras.innovator.solution.PLM)
+5. Run the search
+6. See that only items in that package are returned (e.g. Part, PR, ECO, ECN, etc. for the PLM package)
+
+
 ## Contributing
 
 1. Fork it!
@@ -65,7 +89,7 @@ For more information on contributing to this project, another Aras Labs project,
 
 ## Credits
 
-Created by Aras Corporation Support.
+Created by Aras Corporation Support. Extended and maintained by Aras Labs.
 
 ## License
 

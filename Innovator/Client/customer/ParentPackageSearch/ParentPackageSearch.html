@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../styles/default.css"/>
+	<link rel="stylesheet" type="text/css" href="../../styles/common.css"/>
+    <style type="text/css">
+        html, body
+        {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+	<script type="text/javascript">
+	var aras = top.aras;
+	
+	function openSearchDialog(event)
+	{
+		var param = {
+			aras: top.aras,
+			type: 'SearchDialog',
+			dialogWidth: 700,
+			dialogHeight: 450,
+			itemtypeName: 'PackageDefinition'
+		};
+		
+		function callback(res) {
+			// Set the value 
+			if (res) {
+				var packageName = res.keyed_name;
+				var packageInputField = document.getElementById("parent_package_item_input");
+				
+				packageInputField.value = packageName;
+			}
+		}
+		
+		var topWnd = top.aras.getMostTopWindowWithAras();
+		var wnd = topWnd ? topWnd : window;
+		wnd.ArasModules.MaximazableDialog.show('iframe', param).promise.then(callback);
+	}
+	</script>
+    <div id="parent_package_item" name="parent_package_item" class="sys_f_container sys_session_lang_direction_ltr sys_label_lang_direction_ltr sys_dt_item sys_ft_item" style="top: 0px; left: 20px;">
+        <fieldset style="border-style: solid; border-color: #ADAA9C; border-width: 0px;">
+            <div class="aras-field aras-field_label-top">
+                <span style="font-family: arial, helvetica, sans-serif; font-size: 8pt; font-weight: bold; color: #000000;" class="aras-field__label">Parent Package</span>
+                <div class="aras-field__value">
+                    <div id="parent_package_item_input-wrapper" style="display:inline-block">
+                        <div class="aras-filter-list aras-dropdown-container" style="width: calc(137px);">
+                            <input autocomplete="off" id="parent_package_item_input" maxlength tabindex="30" name="parent_package" class="aras-filter-list__input aras-form-input parent_package">
+                            <div class="aras-filter-list__icon-container">
+                                <span class="aras-filter-list-icon aras-icon-error" style="display: none;"></span>
+                                <span class="aras-filter-list-icon aras-icon-spinner" style="display: none;"></span>
+                            </div>
+                            <button tabindex="-1" id="parent_package_img" class="aras-filter-list__button aras-btn aras-filter-list__button_ellipsis" onclick="openSearchDialog();"></button>
+                            <div tabindex="1" class="aras-filter-list__dropdown aras-dropdown" style="top:0px; max-height: 54.8px;">
+                                <ul class="aras-list"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+</body>
+</html>
