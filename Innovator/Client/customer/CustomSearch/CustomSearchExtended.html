@@ -1,0 +1,134 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="../styles/default.css" />
+	<style type="text/css">
+		html, body
+		{
+			margin: 0;
+			padding: 0;
+			height: 100%;
+			border: none;
+		}
+
+    #part_class_container, #part_name_container, #part_number_container
+    {
+      float: left; 
+      width: 150px, 
+      display: inline;
+    }
+	</style>
+</head>
+<body>
+
+<!-- Part Number -->
+<div id="part_number_container" name="part_number_container" class="sys_f_container sys_session_lang_direction_ltr sys_label_lang_direction_ltr sys_dt_string sys_p_is_required sys_ft_text sys_fn_name sys_pn_name " style="top: 0px; left: 20px;">
+  <fieldset class="sys_f_border" style="border-width: 0px;">
+    <table class="sys_f_table">
+      <tbody class="sys_f_tbody">
+        <tr class="sys_f_tr">
+          <td class="sys_f_label_container sys_f_label_top ">
+            <div id="item_number_label" class="sys_f_label" style="font-family: arial, helvetica, sans-serif;
+                  font-size: 8pt; font-weight: bold; color: #000000;">Part Number</div>
+          </td>
+        </tr>
+        <tr class="sys_f_tr">
+          <td class="sys_f_value_container sys_f_value_bottom ">
+            <div class="sys_f_value">
+              <input type="text" id="item_number" />
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </fieldset>
+</div>
+
+
+<!-- Part Name -->
+<div id="part_name_container" name="part_name_container" class="sys_f_container sys_session_lang_direction_ltr sys_label_lang_direction_ltr sys_dt_string sys_p_is_required sys_ft_text sys_fn_name sys_pn_name " style="top: 0px; left: 150px;">
+  <fieldset class="sys_f_border" style="border-width: 0px;">
+    <table class="sys_f_table">
+      <tbody class="sys_f_tbody">
+        <tr class="sys_f_tr">
+          <td class="sys_f_label_container sys_f_label_top ">
+            <div id="part_name_label" class="sys_f_label" style="font-family: arial, helvetica, sans-serif;
+								font-size: 8pt; font-weight: bold; color: #000000;">Name</div>
+          </td>
+        </tr>
+        <tr class="sys_f_tr">
+          <td class="sys_f_value_container sys_f_value_bottom ">
+            <div class="sys_f_value">
+              <input type="text" id="part_name" />
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</fieldset>
+</div>
+
+<!-- Part Classification -->
+<div id="part_class_container" class="sys_f_container sys_session_lang_direction_ltr sys_label_lang_direction_ltr sys_dt_string sys_p_is_required sys_ft_text sys_fn_name sys_pn_name " style="top: 0px; left: 150px;">
+  <fieldset class="sys_f_border" style="border-width: 0px;">
+    <table class="sys_f_table">
+      <tbody class="sys_f_tbody">
+        <tr class="sys_f_tr">
+          <td class="sys_f_label_container sys_f_label_top ">
+            <div id="part_class_label" class="sys_f_label" style="font-family: arial, helvetica, sans-serif; font-size: 8pt; font-weight: bold; color: #000000;">Classification</div>
+          </td>
+        </tr>
+        <tr class="sys_f_tr">
+          <td class="sys_f_value_container sys_f_value_bottom ">
+            <select id="mySelect">
+              <option value=""></option>
+              <optgroup label="Standard">
+                <option value="Assembly*">Assembly</option>
+                <option value="Component*">Component</option>
+                <option value="Material*">Material</option>
+				<option value="Software*">Software</option>
+              </optgroup>
+              <optgroup label="MPP">
+                <option value="Phantom*">Phantom</option>
+                <option value="MBOM only Part*">MBOM only Part</option>
+              </optgroup>
+            </select>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </fieldset>
+</div>
+
+<!-- Select All Generations -->
+<div id="selectAll_container" name="selectAll_container" class="sys_f_container sys_session_lang_direction_ltr sys_label_lang_direction_ltr sys_dt_string sys_p_is_required sys_ft_text sys_fn_name sys_pn_name " style="top: 0px; left: 150px;">
+  <fieldset class="sys_f_border" style="border-width: 0px;">
+    <table class="sys_f_table">
+      <tbody class="sys_f_tbody">
+        <tr class="sys_f_tr">
+          <td class="sys_f_label_container sys_f_label_top ">
+            <div id="selectAll_label" class="sys_f_label" style="font-family: arial, helvetica, sans-serif;
+								font-size: 8pt; font-weight: bold; color: #000000;">Select All Generations</div>
+          </td>
+        </tr>
+        <tr class="sys_f_tr">
+          <td class="sys_f_value_container sys_f_value_bottom ">
+            <div class="sys_f_value">
+              <input type="checkbox" id="allGenerations" />
+						</div>
+					</td>
+				</tr>
+ 			</tbody>
+		</table>
+	</fieldset>
+</div>
+ 
+<!-- Select All Generations, Simple layout version -->
+<!--<div>
+  <input type="checkbox" id="allGenerations" />
+  <label for="allGenerations">Select All Generations</label>
+ </div>-->
+
+</body>
+</html>
