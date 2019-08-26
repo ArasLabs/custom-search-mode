@@ -204,6 +204,11 @@
 
 			if (SearchMode.prototype.getAml.call(this) == undefined)
 				return undefined;
+	  
+			// check if elements are created before getting their values
+			if (!csFrame.getElementById("item_number")) {
+				return this.currQryItem.item.xml;
+			}
 
 			var condition = (parent.aras.getPreferenceItemProperty("Core_GlobalLayout", null, "core_use_wildcards") == "true" ? "like" : "eq");
 		
