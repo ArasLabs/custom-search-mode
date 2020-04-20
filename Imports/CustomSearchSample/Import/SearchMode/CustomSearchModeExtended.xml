@@ -2,231 +2,249 @@
  <Item type="SearchMode" id="DA7CC1A9E1264A8AB3E9A19EA2CB4BC3" action="add">
   <is_active>0</is_active>
   <label xml:lang="en">Custom Sample Extended</label>
-  <search_handler>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"&gt;
-&lt;html&gt;
-   &lt;body&gt;
-   &lt;iframe id="cs_frame" FRAMEBORDER=0 SCROLLING ="auto" style="width:100%; height:100px;"&gt;
-   &lt;/iframe&gt;
+  <search_handler>function CustomSearchModeExtended(searchContainer, aras)
+{
+    this.supportXClassSearch = false;
 
-&lt;script type="text/javascript"&gt;
+    // Call base SearchMode constructor
+    SearchMode.prototype.constructor.call(this, searchContainer, aras);
+    this.complexity = 3;
+    this.isPartItemType = (searchContainer.itemTypeName &amp;&amp; searchContainer.itemTypeName == 'Part');  //check for if Part
 
-	//these files must be called to load the JavaScripts for search
-	eval(parent.aras.getFileText(parent.aras.getBaseURL() + "/javascript/include.aspx?classes=XmlDocument,SearchMode,AmlValidator"));
-	
-	CustomSearchModeExtended.prototype = new SearchMode;  //declare the new search mode.  Name must equal name of search mode. No Spaces
-	
-	function CustomSearchModeExtended(searchContainer)		//constructor for Custom Search.  Name equals name of SearchMode
-	{
-		// Call base SearchMode constructor
-		SearchMode.prototype.constructor.call(this, searchContainer, parent.aras);
-		this.complexity=3;
-		this.isPartItemType = (searchContainer.itemTypeName &amp;&amp; searchContainer.itemTypeName == 'Part');  //check for if Part
+    // Add the iframe that we need
+    this.csSampleIframe = document.createElement("iframe");
+    this.csSampleIframe.setAttribute("id", "cs_ext_frame");
+    this.csSampleIframe.setAttribute("FRAMEBORDER", 0);
+    this.csSampleIframe.setAttribute("SCROLLING", "auto");
+    this.csSampleIframe.setAttribute("style", "width:100%; height:200px;");
+    searchContainer.searchPlaceholderCell.appendChild(this.csSampleIframe);
+    searchContainer.setStyleAttribute('display', '');
+    searchContainer.toggleSearchPlaceholderVisibility(false); 
+}
 
-		//Verify that the part ItemType has the appropriate properties
-		this.generateValidationInfo = function()
-		{
-			var validationInfo = new Object();
-			var partItemType = parent.aras.getItemTypeForClient("Part");
-			if (partItemType &amp;&amp; partItemType.node)
-				partItemType = partItemType.node;
-			else
-				return undefined;
+CustomSearchModeExtended.prototype = Object.create(SearchMode.prototype);
+CustomSearchModeExtended.constructor = CustomSearchModeExtended;
+CustomSearchModeExtended.prototype.onStartSearchMode = function CSSampleExtendedSearchMode_onStartSearch(sContainer) 
+{
+    // call base onStartSearchMode method
+    SearchMode.prototype.onStartSearchMode.call(this, sContainer);
 
-			var itemNumberProp = partItemType.selectSingleNode("Relationships/Item[@type='Property' and name='item_number']");
-			var itemName = partItemType.selectSingleNode("Relationships/Item[@type='Property' and name='name']");
-			if (!itemNumberProp || !itemName)
-			{
-				if (!itemNumberProp)
-					this.ValidationMsg = "Part ItemType doesn't have 'item_number' property!";
-				else
-					this.ValidationMsg = "Part ItemType doesn't have 'name' property!";
+    if (this.toolbar &amp;&amp; this.toolbar.IsButtonVisible("add_criteria"))
+    this.toolbar.HideItem("add_criteria");
 
-				return undefined;
-			}
+    if (this.grid)
+        this.grid.ShowInputRow(false);
 
-			validationInfo["Item[@type='Part']/item_number"] = itemNumberProp;
-			validationInfo["Item[@type='Part']/name"] = itemName;
+    var containerHeight = '80px';
+    // Current search mode developed especially for Part ItemType.
+    if (!this.isPartItemType)
+    {
+        parent.aras.AlertError("This search is specific to the Part ItemType");  //Alert user this search is for part itemtype only
+        containerHeight = '10px';
+    }
+    else  //if part ItemType load custom html in iframe
+    {
+        var partItemType = parent.aras.getItemTypeForClient("Part");
+        if (partItemType &amp;&amp; partItemType.node)
+        {
+            if (!window.frames["cs_ext_frame"]) return;
+            var urlBase = parent.aras.getBaseURL();
+            document.getElementById("cs_ext_frame").src = urlBase+"/customer/CustomSearch/CustomSearchExtended.html";
+        }
+    }
 
-			return validationInfo;
-		}
-	}
+    this.searchContainer.setStyleAttribute('height', containerHeight);  //set the container height of the search frame
+    this.searchContainer.setStyleAttribute('display', '');
+    this.searchContainer.toggleSearchPlaceholderVisibility(false);
+};
 
-	//Base onStartSearchMode method for your new search item
-	CustomSearchModeExtended.prototype.onStartSearchMode = function CustomSearchModeExtended_onStartSearchMode(sContainer)
-	{
-		SearchMode.prototype.onStartSearchMode.call(this, sContainer);
+CustomSearchModeExtended.prototype.onEndSearchMode = function CustomSearchModeExtended_onEndSearchMode(sContainer) 
+{
+    // Call base onEndSearchMode method.
+    SearchMode.prototype.onEndSearchMode.call(this);
 
-		if (this.toolbar &amp;&amp; this.toolbar.IsButtonVisible("add_criteria"))
-			this.toolbar.HideItem("add_criteria");
+    this.searchContainer.setStyleAttribute('display', 'none');
+    this.searchContainer.toggleSearchPlaceholderVisibility(true);
+};
 
-		if (this.grid)
-			this.grid.ShowInputRow(false);
 
-		var containerHeight = '80px';
-		// Current search mode developed especially for Part ItemType.
-		if (!this.isPartItemType)
-		{
-			parent.aras.AlertError("This search is specific to the Part ItemType");  //Alert user this search is for part itemtype only
-			containerHeight = '10px';
-		}
-		else  //if part ItemType load custom html in iframe
-		{
-			var partItemType = parent.aras.getItemTypeForClient("Part");
-			if (partItemType &amp;&amp; partItemType.node)
-			{
-				if (!window.frames["cs_frame"]) return;
-				var urlBase = parent.aras.getBaseURL();
-				document.getElementById("cs_frame").src = urlBase+"/customer/CustomSearch/CustomSearchExtended.html";
-			}
-		}
+CustomSearchModeExtended.prototype.clearSearchCriteria = function CustomSearchModeExtended_clearSearchCriteria()  //clear search criteria using "clear search criteria" button in toolbar
+{
+    var csFrame = document.getElementById("cs_ext_frame").contentWindow.document;
+    if (this.isPartItemType)
+    {
+        this.currQryItem.removeItemAttribute("where");
+        this.currQryItem.removeItemAttribute("order_by");
+        csFrame.getElementById("item_number").value = "";
+        csFrame.getElementById("part_name").value = "";
+          var element = csFrame.getElementById("mySelect");
+        //element.value = ""'; // FEHLER!!! Form lädt nicht!!!
+        
+    }
+}
 
-		this.searchContainer.setStyleAttribute('height', containerHeight);  //set the container height of the search frame
-		this.searchContainer.setStyleAttribute('display', '');
-	}
+// Verify that the part ItemType has the appropriate properties
+CustomSearchModeExtended.prototype.generateValidationInfo = function CustomSearchModeExtended_generateValidationInfo() {
+    var validationInfo = new Object();
+    var partItemType = parent.aras.getItemTypeForClient("Part");
+    if (partItemType &amp;&amp; partItemType.node) {
+        partItemType = partItemType.node;
+    } else {
+        return null;
+    }
 
-	CustomSearchModeExtended.prototype.clearSearchCriteria = function CustomSearchModeExtended_clearSearchCriteria()  //clear search criteria using "clear search criteria" button in toolbar
-	{
-		var csFrame = document.getElementById("cs_frame").contentWindow.document;
-		if (this.isPartItemType)
-		{
-			this.currQryItem.removeItemAttribute("where");
-			this.currQryItem.removeItemAttribute("order_by");
-			csFrame.getElementById("item_number").value = "";
-			csFrame.getElementById("part_name").value = "";
-  			var element = csFrame.getElementById("mySelect");
-			//element.value = ""'; // FEHLER!!! Form lädt nicht!!!
-			
-		}
-	}
-	
-	//Set the AML for search based upon search criteria provided
-	CustomSearchModeExtended.prototype.setAml = function CustomSearchModeExtended_setAml(searchAML)
-	{
-	
-		// Call base initSearch method.
-		SearchMode.prototype.setAml.call(this, searchAML);
+    var itemNumberProp = partItemType.selectSingleNode("Relationships/Item[@type='Property' and name='item_number']");
+    var itemNameProp = partItemType.selectSingleNode("Relationships/Item[@type='Property' and name='name']");
+    if (itemNumberProp &amp;&amp; itemNameProp) {
+        validationInfo["Item[@type='Part']/item_number"] = itemNumberProp;
+        validationInfo["Item[@type='Part']/name"] = itemNameProp;
+        return validationInfo;
+    }
 
-		this.currQryItem.item.removeAttribute("where");
+    // If we get here then we're missing some prop
+    this.ValidationMsg =
+        `Part ItemType is missing ${
+            (!itemNumberProp &amp;&amp; !itemNameProp) ? "'item_number' and 'name' properties" 
+            : (!itemNumberProp) ? "'item_number' property"
+            : "'name' property"}!`;
+    return null;
+}
 
-		var json_result;
-		try
-		{
-			json_result = parent.aras.CriteriaConverter.AmlToSimple(searchAML);
-		}
-		catch (err)
-		{
-			json_result = undefined;
-		}
-		var propList = eval(json_result);
+//Set the AML for search based upon search criteria provided
+CustomSearchModeExtended.prototype.setAml = function CustomSearchModeExtended_setAml(searchAML)
+{
 
-		//[xpath][name][value][condition]
-		//xpath - Item[@type='Part']/related_id
-		var xpath_num = 0;
-		var name_num = 1;
-		var value_num = 2;
+    // Call base initSearch method.
+    SearchMode.prototype.setAml.call(this, searchAML);
 
-		setPropertyValue("Item[@type='Part']/item_number", "item_number");
-		setPropertyValue("Item[@type='Part']/name", "part_name");
+    this.currQryItem.item.removeAttribute("where");
 
-		//Sample to set the property values from previous search (not Implemented)
-		function setPropertyValue(propXPath, fieldName)
-		{
-			var valueToSet = "";
-			if (propList)
-			{
-				for (var propIndex = 0; propIndex &lt; propList.length; propIndex++)
-				{
-					if (propList[propIndex][xpath_num] === propXPath)
-					{
-						valueToSet = propList[propIndex][value_num];
-						break;
-					}
-				}
-			}
+    var json_result;
+    try
+    {
+        json_result = parent.aras.CriteriaConverter.AmlToSimple(searchAML);
+    }
+    catch (err)
+    {
+        json_result = undefined;
+    }
+    var propList = eval(json_result);
 
-			if (!valueToSet)
-				valueToSet = "";
+    //[xpath][name][value][condition]
+    //xpath - Item[@type='Part']/related_id
+    var xpath_num = 0;
+    var name_num = 1;
+    var value_num = 2;
 
-		}
-	}
-	//Set your search criteria based upon data received from getAML
-	CustomSearchModeExtended.prototype.setSearchCriteria = function CustomSearchModeExtended_setSearchCriteria(propXpath, criteria, condition)
-	{
-		if (!criteria)
-			return;
+    setPropertyValue("Item[@type='Part']/item_number", "item_number");
+    setPropertyValue("Item[@type='Part']/name", "part_name");
 
-		var nodeName = propXpath.split("/");
-		var nodeTemplate = this.currQryItem.dom.createElement(nodeName[nodeName.length - 1]);
-		nodeTemplate.setAttribute("condition", condition);
+    //Sample to set the property values from previous search (not Implemented)
+    function setPropertyValue(propXPath, fieldName)
+    {
+        var valueToSet = "";
+        if (propList)
+        {
+            for (var propIndex = 0; propIndex &lt; propList.length; propIndex++)
+            {
+                if (propList[propIndex][xpath_num] === propXPath)
+                {
+                    valueToSet = propList[propIndex][value_num];
+                    break;
+                }
+            }
+        }
 
-		var inner_aml = parent.aras.CriteriaConverter.SimpleToAml(criteria, nodeTemplate.xml);
+        if (!valueToSet)
+            valueToSet = "";
 
-		if (!inner_aml)
-		{
-			return;
-		}
+    }
+}
+//Set your search criteria based upon data received from getAML
+CustomSearchModeExtended.prototype.setSearchCriteria = function CustomSearchModeExtended_setSearchCriteria(propXpath, criteria, condition)
+{
+    if (!criteria)
+        return;
 
-		var domToAml = parent.aras.createXMLDocument();
-		domToAml.loadXML(inner_aml);
+    var nodeName = propXpath.split("/");
+    var nodeTemplate = this.currQryItem.dom.createElement(nodeName[nodeName.length - 1]);
+    nodeTemplate.setAttribute("condition", condition);
 
-		var path = "";
-		for (var i = 0; i &lt; nodeName.length - 1; i++)
-		{
-			path += nodeName[i];
-			if (i + 1 != nodeName.length - 1)
-			{
-				path += "/";
-			}
-		}
-		var targetNode = this.currQryItem.dom.selectSingleNode(path);
+    var inner_aml = parent.aras.CriteriaConverter.SimpleToAml(criteria, nodeTemplate.xml);
 
-		if (targetNode)
-		{
-			if (domToAml.documentElement)
-			{
-				targetNode.appendChild(domToAml.documentElement);
-			}
-		}
-		else
-		{
-			var critNd = this._createItemByXPath(path);
-			critNd.appendChild(domToAml.documentElement);
-		}
-	}
+    if (!inner_aml)
+    {
+        return;
+    }
 
-	//get the AMl from the custom search HTML
-	CustomSearchModeExtended.prototype.getAml = function CustomSearchModeExtended_getAml()
-	{
-		var csFrame = document.getElementById("cs_frame").contentWindow.document;
-		if (this.isPartItemType)
-		{
-			this.currQryItem.removeAllCriterias();
+    var domToAml = parent.aras.createXMLDocument();
+    domToAml.loadXML(inner_aml);
 
-			if (SearchMode.prototype.getAml.call(this) == undefined)
-				return undefined;
+    var path = "";
+    for (var i = 0; i &lt; nodeName.length - 1; i++)
+    {
+        path += nodeName[i];
+        if (i + 1 != nodeName.length - 1)
+        {
+            path += "/";
+        }
+    }
+    var targetNode = this.currQryItem.dom.selectSingleNode(path);
 
-			var condition = (parent.aras.getPreferenceItemProperty("Core_GlobalLayout", null, "core_use_wildcards") == "true" ? "like" : "eq");
-		
-			//Set the AML values for your search
-			this.setSearchCriteria("Item[@type='Part']/item_number", csFrame.getElementById("item_number").value, condition);
-			this.setSearchCriteria("Item[@type='Part']/name", csFrame.getElementById("part_name").value, condition);
-			var x = csFrame.getElementById("mySelect").selectedIndex;
- 			this.setSearchCriteria("Item[@type='Part']/classification",csFrame.getElementsByTagName("option")[x].value, condition);
-			 if(csFrame.getElementById("allGenerations").checked)
-			{
-				// this.setSearchCriteria("Item[@type='Part']/generation", 1000, "lt"); // Previous version
-				this.setSearchCriteria("Item[@type='Part']/id", "is not null"); // Better version, more flexible
-			}
+    if (targetNode)
+    {
+        if (domToAml.documentElement)
+        {
+            targetNode.appendChild(domToAml.documentElement);
+        }
+    }
+    else
+    {
+        var critNd = this._createItemByXPath(path);
+        critNd.appendChild(domToAml.documentElement);
+    }
+}
 
-		}
+//get the AMl from the custom search HTML
+CustomSearchModeExtended.prototype.getAml = function CustomSearchModeExtended_getAml()
+{
+    var csFrame = document.getElementById("cs_ext_frame").contentWindow.document;
+    if (this.isPartItemType)
+    {
+        this.currQryItem.removeAllCriterias();
 
-		return this.currQryItem.item.xml;
-	}
-&lt;/script&gt;
+        if (SearchMode.prototype.getAml.call(this) == undefined)
+            return undefined;
 
- &lt;/body&gt;
+        var condition = (parent.aras.getPreferenceItemProperty("Core_GlobalLayout", null, "core_use_wildcards") == "true" ? "like" : "eq");
+    
+        //Set the AML values for your search
+        this.setSearchCriteria("Item[@type='Part']/item_number", csFrame.getElementById("item_number").value, condition);
+        this.setSearchCriteria("Item[@type='Part']/name", csFrame.getElementById("part_name").value, condition);
+        var x = csFrame.getElementById("mySelect").selectedIndex;
+         this.setSearchCriteria("Item[@type='Part']/classification",csFrame.getElementsByTagName("option")[x].value, condition);
+         if(csFrame.getElementById("allGenerations").checked)
+        {
+            // this.setSearchCriteria("Item[@type='Part']/generation", 1000, "lt"); // Previous version
+            this.setSearchCriteria("Item[@type='Part']/id", "is not null"); // Better version, more flexible
+        }
 
-&lt;/html&gt;</search_handler>
+    }
+
+    return this.currQryItem.item.xml;
+};
+
+CustomSearchModeExtended.prototype.hide = function CustomSearchModeExtended_hide() {
+	this.csSampleIframe.style.display = 'none';
+};
+
+CustomSearchModeExtended.prototype.show = function CustomSearchModeExtended_show() {
+	this.csSampleIframe.style.display = '';
+};
+
+CustomSearchModeExtended.prototype.remove = function CustomSearchModeExtended_remove() {
+	this.searchContainer.searchPlaceholderCell.removeChild(this.csSampleIframe);
+};</search_handler>
   <name>CustomSearchModeExtended</name>
  </Item>
 </AML>

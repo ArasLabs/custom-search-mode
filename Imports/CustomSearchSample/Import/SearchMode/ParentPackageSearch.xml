@@ -2,128 +2,143 @@
  <Item type="SearchMode" id="282932B5B880417C8369B13CCCE561D6" action="add">
   <is_active>0</is_active>
   <label xml:lang="en">Parent Package Search</label>
-  <search_handler>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"&gt;
-&lt;html&gt;
-&lt;body&gt;
-&lt;iframe id="pp_frame" FRAMEBORDER=0 SCROLLING="auto" style="width: 100%; height: 200px;"&gt;
-&lt;/iframe&gt;
+  <search_handler>function ParentPackageSearch(searchContainer, aras)
+{
+    this.supportXClassSearch = false;
 
-&lt;script type="text/javascript"&gt;
+    // Call base SearchMode constructor
+    SearchMode.prototype.constructor.call(this, searchContainer, aras);
+    this.complexity = 3;
+
+    // Add the iframe that we need
+    this.ppIframe = document.createElement("iframe");
+    this.ppIframe.setAttribute("id", "pp_frame");
+    this.ppIframe.setAttribute("FRAMEBORDER", 0);
+    this.ppIframe.setAttribute("SCROLLING", "auto");
+    this.ppIframe.setAttribute("style", "width:100%; height:200px;");
+    searchContainer.searchPlaceholderCell.appendChild(this.ppIframe);
+    searchContainer.setStyleAttribute('display', '');
+    searchContainer.toggleSearchPlaceholderVisibility(false);
+}
+
+ParentPackageSearch.prototype = Object.create(SearchMode.prototype);
+ParentPackageSearch.constructor = ParentPackageSearch;
+ParentPackageSearch.prototype.onStartSearchMode = function ParentPackageSearch_onStartSearchMode(sContainer) 
+{
+    // call base onStartSearchMode method
+    SearchMode.prototype.onStartSearchMode.call(this, sContainer);
+
+    if (this.toolbar &amp;&amp; this.toolbar.IsButtonVisible("add_criteria"))
+    this.toolbar.HideItem("add_criteria");
+
+    if (this.grid)
+        this.grid.ShowInputRow(false);
+
+    var containerHeight = '150px';
+
+    if (!window.frames["pp_frame"]) return;
+    var urlBase = parent.aras.getBaseURL();
+    document.getElementById("pp_frame").src = urlBase + "/customer/parentpackagesearch/parentpackagesearch.html";
+
+    this.searchContainer.setStyleAttribute('height', containerHeight); // set the container height of the search frame
+    this.searchContainer.setStyleAttribute('display', '');
+    this.searchContainer.toggleSearchPlaceholderVisibility(false);
+}
+
+// Set your search criteria based upon data received from getAML
+ParentPackageSearch.prototype.setSearchCriteria = function ParentPackageSearchSearchMode_setSearchCriteria(prpoXPath, criteria, condition)
+{
+    return;
+}
+
+ParentPackageSearch.prototype.onEndSearchMode = function ParentPackageSearchSearchMode_onEndSearchMode(sContainer) {
+    // Call base onEndSearchMode method.
+    SearchMode.prototype.onEndSearchMode.call(this);
 debugger;
-    // these files must be called to load the JavaScripts for search
-	eval(parent.aras.getFileText(parent.aras.getBaseURL() + "/javascript/include.aspx?classes=XmlDocument,SearchMode,AmlValidator"));
+    this.searchContainer.setStyleAttribute('display', 'none');
+    this.searchContainer.toggleSearchPlaceholderVisibility(true);
+};
 
-    ParentPackageSearch.prototype = new SearchMode; // declare the new search mode. Name must equal name of search mode. No spaces
+ParentPackageSearch.prototype.clearSearchCriteria = function ParentPackageSearch_clearSearchCriteria()
+{
+    var ppFrame = document.getElementById("pp_frame").contentWindow.document;
 
-    // Constructor for Custom Search. Name must equal search mode.
-    function ParentPackageSearch(searchContainer)
+    this.currQryItem.removeItemAttribute("where");
+    this.currQryItem.removeItemAttribute("order_by");
+    ppFrame.getElementById("parent_package_item_input").value = "";
+}
+
+// Set the AML for search based upon search criteria provided
+ParentPackageSearch.prototype.setAml = function ParentPackageSearchSearchMode_setAml(searchAML)
+{
+    // Call base initSearch method
+    SearchMode.prototype.setAml.call(this, searchAML);
+
+    this.currQryItem.item.removeAttribute("where");    
+}
+
+// Get the AML from the custom search HTML
+ParentPackageSearch.prototype.getAml = function ParentPackageSearchSearchMode_getAml()
+{
+    var ppFrame = document.getElementById("pp_frame").contentWindow.document;
+    
+    this.currQryItem.removeAllCriterias();
+
+    if (SearchMode.prototype.getAml.call(this) == undefined)
+        return undefined;
+
+    var condition = (parent.aras.getPreferenceItemProperty("Core_GlobalLayout", null, "core_use_wildcards") == "true" ? "like" : "eq");
+    
+    // Set the AML values for your search
+    var packageName = ppFrame.getElementById("parent_package_item_input").value;
+
+    if (packageName == "")
     {
-        // Call base SearchMode constructor
-        SearchMode.prototype.constructor.call(this, searchContainer, parent.aras);
-        this.complexity=3;
-    }
-
-    // Base onStartSearchMode method for your new search item
-    ParentPackageSearch.prototype.onStartSearchMode = function ParentPackageSearchSearchMode_onStartSearchMode(sContainer)
-    {
-        SearchMode.prototype.onStartSearchMode.call(this, sContainer);
-
-        if (this.toolbar &amp;&amp; this.toolbar.IsButtonVisible("add_criteria"))
-            this.toolbar.HideItem("add_criteria");
-
-        if (this.grid)
-            this.grid.ShowInputRow(false);
-
-        var containerHeight = '150px';
-
-        if (!window.frames["pp_frame"]) return;
-        var urlBase = parent.aras.getBaseURL();
-        document.getElementById("pp_frame").src = urlBase + "/customer/parentpackagesearch/parentpackagesearch.html";
-
-        this.searchContainer.setStyleAttribute('height', containerHeight); // set the container height of the search frame
-        this.searchContainer.setStyleAttribute('display', '');
-    }
-
-    // Set your search criteria based upon data received from getAML
-    ParentPackageSearch.setSearchCriteria = function CSSampleSearchMode_setSearchCriteria(prpoXPath, criteria, condition)
-    {
-        debugger;
-        return;
-    },
-
-    ParentPackageSearch.prototype.clearSearchCriteria = function ParentPackageSearch_clearSearchCriteria()
-    {
-        var ppFrame = document.getElementById("pp_frame").contentWindow.document;
-
-        this.currQryItem.removeItemAttribute("where");
-        this.currQryItem.removeItemAttribute("order_by");
-        ppFrame.getElementById("parent_package_item_input").value = "";
-    }
-
-    // Set the AML for search based upon search criteria provided
-    ParentPackageSearch.prototype.setAml = function ParentPackageSearchSearchMode_setAml(searchAML)
-    {
-        // Call base initSearch method
-        SearchMode.prototype.setAml.call(this, searchAML);
-
-        this.currQryItem.item.removeAttribute("where");    
-    }
-
-    // Get the AML from the custom search HTML
-    ParentPackageSearch.prototype.getAml = function ParentPackageSearchSearchMode_getAml()
-    {
-        debugger;
-        var ppFrame = document.getElementById("pp_frame").contentWindow.document;
-        
         this.currQryItem.removeAllCriterias();
-
-        if (SearchMode.prototype.getAml.call(this) == undefined)
-            return undefined;
-
-        var condition = (parent.aras.getPreferenceItemProperty("Core_GlobalLayout", null, "core_use_wildcards") == "true" ? "like" : "eq");
-        
-        // Set the AML values for your search
-        var packageName = ppFrame.getElementById("parent_package_item_input").value;
-
-        if (packageName == "")
-        {
-            this.currQryItem.removeAllCriterias();
-            return this.currQryItem.item.xml;
-        }
-        // Get all of the IDs of the elements in the selected package
-        aml = "&lt;AML&gt;";
-        aml += "    &lt;Item type='PackageElement' action='get' select='element_id'&gt;";
-        aml += "        &lt;source_id&gt;";
-        aml += "            &lt;Item type='PackageGroup' action='get' select='id'&gt;"
-        aml += "                &lt;source_id&gt;";
-        aml += "                    &lt;Item type='PackageDefinition' action='get' select='id, keyed_name'&gt;";
-        aml += "                        &lt;keyed_name&gt;" + packageName + "&lt;/keyed_name&gt;";
-        aml += "                    &lt;/Item&gt;";
-        aml += "                &lt;/source_id&gt;";
-        aml += "            &lt;/Item&gt;";
-        aml += "        &lt;/source_id&gt;";
-        aml += "    &lt;/Item&gt;";
-        aml += "&lt;/AML&gt;";
-
-        var elements = top.aras.IomInnovator.applyAML(aml);
-
-        // Loop through the elements and get a list of IDs
-        var idlist = [];
-        for (var i = 0, length = elements.getItemCount(); i &lt; length; i++)
-        {
-            idlist.push(elements.getItemByIndex(i).getProperty("element_id"));
-        }
-
-        if (idlist.length &gt; 0)
-        {
-            this.currQryItem.item.setAttribute("idlist", idlist.join(','));
-        }
         return this.currQryItem.item.xml;
     }
+    // Get all of the IDs of the elements in the selected package
+    aml = "&lt;AML&gt;";
+    aml += "    &lt;Item type='PackageElement' action='get' select='element_id'&gt;";
+    aml += "        &lt;source_id&gt;";
+    aml += "            &lt;Item type='PackageGroup' action='get' select='id'&gt;"
+    aml += "                &lt;source_id&gt;";
+    aml += "                    &lt;Item type='PackageDefinition' action='get' select='id, keyed_name'&gt;";
+    aml += "                        &lt;keyed_name&gt;" + packageName + "&lt;/keyed_name&gt;";
+    aml += "                    &lt;/Item&gt;";
+    aml += "                &lt;/source_id&gt;";
+    aml += "            &lt;/Item&gt;";
+    aml += "        &lt;/source_id&gt;";
+    aml += "    &lt;/Item&gt;";
+    aml += "&lt;/AML&gt;";
 
-&lt;/script&gt;
-&lt;/body&gt;
-&lt;/htmL&gt;</search_handler>
+    var elements = top.aras.IomInnovator.applyAML(aml);
+
+    // Loop through the elements and get a list of IDs
+    var idlist = [];
+    for (var i = 0, length = elements.getItemCount(); i &lt; length; i++)
+    {
+        idlist.push(elements.getItemByIndex(i).getProperty("element_id"));
+    }
+
+    if (idlist.length &gt; 0)
+    {
+        this.currQryItem.item.setAttribute("idlist", idlist.join(','));
+    }
+    return this.currQryItem.item.xml;
+};
+
+ParentPackageSearch.prototype.hide = function ParentPackageSearch_hide() {
+	this.ppIframe.style.display = 'none';
+};
+
+ParentPackageSearch.prototype.show = function ParentPackageSearch_show() {
+	this.ppIframe.style.display = '';
+};
+
+ParentPackageSearch.prototype.remove = function ParentPackageSearch_remove() {
+	this.searchContainer.searchPlaceholderCell.removeChild(this.ppIframe);
+};</search_handler>
   <name>ParentPackageSearch</name>
  </Item>
 </AML>
