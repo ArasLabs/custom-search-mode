@@ -12,6 +12,7 @@ This project and the following release notes have been migrated from the old Ara
 
 Release | Notes
 --------|--------
+[v2.0.0](https://github.com/ArasLabs/custom-search-mode/releases/tag/v2.0.0) | Updated to 12.0 SP6
 [v3](https://github.com/ArasLabs/custom-search-mode/releases/tag/v3) | Added Parent Package search mode example
 [v2](https://github.com/ArasLabs/custom-search-mode/releases/tag/v2) | Upgraded to support 11.0 SP11
 [v1](https://github.com/ArasLabs/custom-search-mode/releases/tag/v1) | Initial Release
@@ -20,6 +21,7 @@ Release | Notes
 
 Project | Aras
 --------|------
+[v2.0.0](https://github.com/ArasLabs/custom-search-mode/releases/tag/v2.0.0) | 12.0 SP6
 [v3](https://github.com/ArasLabs/custom-search-mode/releases/tag/v3) | 11.0 SP12
 [v2](https://github.com/ArasLabs/custom-search-mode/releases/tag/v2) | 11.0 SP11
 [v1](https://github.com/ArasLabs/custom-search-mode/releases/tag/v1) | 9.3
